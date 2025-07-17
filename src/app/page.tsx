@@ -1,7 +1,7 @@
-import { QuantumCipherApp } from "@/components/quantum-cipher-app";
+import { DigitalLockerApp } from "@/components/digital-locker-app";
 
 export default function Home() {
   return (
-    <QuantumCipherApp />
+    <DigitalLockerApp />
   );
 }
