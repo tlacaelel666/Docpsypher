@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, FolderLock, ShieldCheck, Clock, UserCheck, Upload, Trash2 } from 'lucide-react';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { QuantumFingerprint } from './quantum-fingerprint';
 
 const documentsData = [
   { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado' },
@@ -25,6 +26,7 @@ const accessLogData = [
 
 export function DigitalLockerApp() {
   const [documents, setDocuments] = useState(documentsData);
+  const [isQuantumVerified, setIsQuantumVerified] = useState(true);
 
   const handleDelete = (docId: string) => {
     setDocuments(documents.filter(doc => doc.id !== docId));
@@ -109,12 +111,17 @@ export function DigitalLockerApp() {
                       </div>
                       <p className="font-semibold text-green-400">Operacional</p>
                   </div>
-                   <div className="flex items-center justify-between p-3 bg-card rounded-lg border">
-                      <div className="flex items-center gap-3">
-                          <UserCheck className="h-5 w-5 text-primary" />
-                          <p>Identidad</p>
-                      </div>
-                      <p className="font-semibold text-primary">Verificada</p>
+                   <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <BrainCircuit className="h-5 w-5 text-primary" />
+                            <p>Huella Cuántica</p>
+                        </div>
+                        <p className={cn("font-semibold", isQuantumVerified ? "text-primary" : "text-destructive")}>
+                          {isQuantumVerified ? "Verificada" : "Inconsistente"}
+                        </p>
+                    </div>
+                    <QuantumFingerprint active={isQuantumVerified} />
                   </div>
                 </CardContent>
               </Card>
