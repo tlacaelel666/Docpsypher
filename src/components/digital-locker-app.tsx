@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit } from 'lucide-react';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,12 +9,14 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { QuantumFingerprint } from './quantum-fingerprint';
+import { DocumentAnalysisDialog } from './document-analysis-dialog';
+import type { Document } from '@/types/document';
 
-const documentsData = [
-  { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado' },
-  { id: 'doc-002', name: 'Acta_de_Nacimiento.png', type: 'Legal', date: '2023-09-20', status: 'Verificado' },
-  { id: 'doc-003', name: 'Diploma_Universitario.pdf', type: 'Académico', date: '2023-11-01', status: 'Pendiente' },
-  { id: 'doc-004', name: 'Comprobante_de_Domicilio.jpg', type: 'Servicios', date: '2023-10-28', status: 'Verificado' },
+const documentsData: Document[] = [
+  { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado', analysis: { isAuthentic: true } },
+  { id: 'doc-002', name: 'Acta_de_Nacimiento.png', type: 'Legal', date: '2023-09-20', status: 'Verificado', analysis: { isAuthentic: true } },
+  { id: 'doc-003', name: 'Diploma_Universitario.pdf', type: 'Académico', date: '2023-11-01', status: 'Pendiente', analysis: null },
+  { id: 'doc-004', name: 'Comprobante_de_Domicilio.jpg', type: 'Servicios', date: '2023-10-28', status: 'Verificado', analysis: { isAuthentic: true } },
 ];
 
 const accessLogData = [
@@ -25,12 +27,17 @@ const accessLogData = [
 
 
 export function DigitalLockerApp() {
-  const [documents, setDocuments] = useState(documentsData);
+  const [documents, setDocuments] = useState<Document[]>(documentsData);
   const [isQuantumVerified, setIsQuantumVerified] = useState(true);
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
 
   const handleDelete = (docId: string) => {
     setDocuments(documents.filter(doc => doc.id !== docId));
   }
+  
+  const handleDocumentVerified = (newDocument: Document) => {
+    setDocuments(prev => [newDocument, ...prev]);
+  };
 
   return (
     <TooltipProvider>
@@ -43,9 +50,9 @@ export function DigitalLockerApp() {
                 Portafolio de Seguridad Digital
               </h1>
             </div>
-            <Button>
+            <Button onClick={() => setIsAnalysisDialogOpen(true)}>
               <Upload className="mr-2 h-4 w-4" />
-              Subir Nuevo Documento
+              Subir y Analizar Documento
             </Button>
           </header>
           
@@ -54,7 +61,7 @@ export function DigitalLockerApp() {
               <Card className="shadow-lg animate-fadeIn">
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl flex items-center gap-2"><FileText /> Mis Documentos</CardTitle>
-                  <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y almacenados de forma segura.</CardDescription>
+                  <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y verificados por IA.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -74,11 +81,25 @@ export function DigitalLockerApp() {
                           <TableCell>{doc.type}</TableCell>
                           <TableCell>{doc.date}</TableCell>
                           <TableCell>
-                            <Badge variant={doc.status === 'Verificado' ? 'default' : 'secondary'} className={cn(doc.status === 'Verificado' ? 'bg-green-500/80 text-white' : 'bg-yellow-500/80 text-black')}>
+                            <Badge variant={doc.status === 'Verificado' ? 'default' : doc.status === 'Rechazado' ? 'destructive' : 'secondary'} className={cn(
+                              doc.status === 'Verificado' && 'bg-green-500/80 text-white',
+                              doc.status === 'Pendiente' && 'bg-yellow-500/80 text-black',
+                              doc.status === 'Rechazado' && 'bg-red-500/80 text-white'
+                            )}>
                               {doc.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right space-x-1">
+                             <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" disabled={!doc.analysis}>
+                                  <ScanLine className="h-4 w-4 text-primary" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Ver Análisis de IA</p>
+                              </TooltipContent>
+                            </Tooltip>
                              <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
@@ -156,6 +177,11 @@ export function DigitalLockerApp() {
             </div>
           </div>
         </main>
+        <DocumentAnalysisDialog 
+          open={isAnalysisDialogOpen}
+          onOpenChange={setIsAnalysisDialogOpen}
+          onDocumentVerified={handleDocumentVerified}
+        />
       </div>
     </TooltipProvider>
   );
