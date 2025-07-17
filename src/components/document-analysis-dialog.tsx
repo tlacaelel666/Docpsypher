@@ -17,6 +17,7 @@ import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import type { Document } from '@/types/document';
+import { cn } from '@/lib/utils';
 
 const FormSchema = z.object({
   file: z.any().refine(files => files?.length === 1, 'Debes seleccionar un archivo.'),
@@ -64,19 +65,20 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
 
   const handleAddToLocker = () => {
     if (analysisResult?.analysis) {
+        const isAuthentic = analysisResult.analysis.isAuthentic;
         const newDoc: Document = {
             id: `doc-${Date.now()}`,
             name: fileName,
             type: form.getValues('documentType'),
             date: new Date().toISOString().split('T')[0],
-            status: analysisResult.analysis.isAuthentic ? 'Verificado' : 'Rechazado',
+            status: isAuthentic ? 'Verificado' : 'Rechazado',
             analysis: analysisResult.analysis,
         };
         onDocumentVerified(newDoc);
         toast({
-            title: "Documento Añadido",
-            description: `"${fileName}" se ha guardado en tu portafolio.`,
-            variant: 'default',
+            title: isAuthentic ? "Documento Añadido" : "Registro Guardado",
+            description: `"${fileName}" se ha guardado en tu portafolio como ${isAuthentic ? 'Verificado' : 'Rechazado'}.`,
+            variant: isAuthentic ? 'default' : 'destructive',
         });
         handleClose();
     }
@@ -255,8 +257,8 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
         {analysisResult && (
              <DialogFooter>
                  <Button variant="ghost" onClick={handleClose}>Cerrar</Button>
-                 <Button onClick={handleAddToLocker} disabled={!analysisResult.analysis.isAuthentic}>
-                    {analysisResult.analysis.isAuthentic ? 'Añadir al Portafolio' : 'Acción no permitida'}
+                 <Button onClick={handleAddToLocker}>
+                    {analysisResult.analysis.isAuthentic ? 'Añadir al Portafolio' : 'Guardar Registro Rechazado'}
                  </Button>
              </DialogFooter>
         )}
