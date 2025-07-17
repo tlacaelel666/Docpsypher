@@ -26,7 +26,7 @@ export default function LoginPage() {
             <div className="flex justify-center mb-4">
               <FolderLock className="h-10 w-10 text-primary" />
             </div>
-            <CardTitle className="font-headline text-3xl">Bienvenido de Nuevo</CardTitle>
+            <CardTitle className="font-headline text-3xl">Bienvenido a DocSafer</CardTitle>
             <CardDescription>Inicia sesión para acceder a tu portafolio digital.</CardDescription>
           </CardHeader>
           <CardContent>

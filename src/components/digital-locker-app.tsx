@@ -48,7 +48,7 @@ export function DigitalLockerApp() {
             <div className="flex items-center gap-3">
               <FolderLock className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold font-headline tracking-tighter">
-                Portafolio de Seguridad Digital
+                DocSafer
               </h1>
             </div>
             <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export function DigitalLockerApp() {
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl flex items-center gap-2"><Clock /> Auditoría de Accesos</CardTitle>
                   <CardDescription>Accesos recientes auditados a tus documentos.</CardDescription>
-                </-CardHeader>
+                </CardHeader>
                 <CardContent>
                   <ul className="space-y-4">
                     {accessLogData.map(log => (

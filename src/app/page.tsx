@@ -9,7 +9,7 @@ export default function WelcomePage() {
         <div className="flex items-center gap-3">
           <FolderLock className="h-8 w-8 text-primary" />
           <h1 className="text-xl font-bold font-headline tracking-tighter">
-            Portafolio de Seguridad Digital
+            DocSafer
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -60,7 +60,7 @@ export default function WelcomePage() {
           </div>
         </div>
         <div className="text-center mt-8 text-xs text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Portafolio de Seguridad Digital. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} DocSafer by smokapp software &amp; AI powered by Gemini &amp; Firebase Studio. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

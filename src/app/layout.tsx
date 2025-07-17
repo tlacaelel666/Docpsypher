@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'Portafolio de Seguridad Digital',
+  title: 'DocSafer | Tu Portafolio de Seguridad Digital',
   description: 'Tu locker digital seguro para documentación importante, con acceso auditado para las instancias que lo requieran.',
 };
 
