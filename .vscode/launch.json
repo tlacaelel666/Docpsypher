@@ -8,7 +8,7 @@
             "name": "C#: Quantum cipher Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/<relative-path-to-project-folder>Quantum cipher.csproj"
+            "projectPath": "${workspaceFolder}/studio/Quantum cipher.csproj"
         },
         {
             "name": ".NET Core Attach",
