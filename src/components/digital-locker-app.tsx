@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine } from 'lucide-react';
+import Link from 'next/link';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -50,10 +51,24 @@ export function DigitalLockerApp() {
                 Portafolio de Seguridad Digital
               </h1>
             </div>
-            <Button onClick={() => setIsAnalysisDialogOpen(true)}>
-              <Upload className="mr-2 h-4 w-4" />
-              Subir y Analizar Documento
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => setIsAnalysisDialogOpen(true)}>
+                <Upload className="mr-2 h-4 w-4" />
+                Subir y Analizar Documento
+              </Button>
+               <Tooltip>
+                <TooltipTrigger asChild>
+                   <Button variant="outline" size="icon" asChild>
+                      <Link href="/">
+                        <LogOut className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Cerrar Sesión</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </header>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -151,7 +166,7 @@ export function DigitalLockerApp() {
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl flex items-center gap-2"><Clock /> Auditoría de Accesos</CardTitle>
                   <CardDescription>Accesos recientes auditados a tus documentos.</CardDescription>
-                </CardHeader>
+                </-CardHeader>
                 <CardContent>
                   <ul className="space-y-4">
                     {accessLogData.map(log => (
