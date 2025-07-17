@@ -1,9 +1,11 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
-// IMPORTANT: Replace with your actual configuration from the Firebase console
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// IMPORTANT: Create a .env.local file in the root of your project
+// and add your Firebase configuration there.
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -15,5 +17,6 @@ const firebaseConfig = {
 
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// We check if the app is already initialized to avoid errors during hot-reloading.
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
