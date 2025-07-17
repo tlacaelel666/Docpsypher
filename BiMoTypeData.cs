@@ -9,6 +9,8 @@ public static class BiMoTypeData
         new RadioactiveElement { Isotope = "U235", HalfLifeYears = 7.038e8, Energy = 202.5, Type = "Fission", Spin = 7/2.0 },
         new RadioactiveElement { Isotope = "Pu239", HalfLifeYears = 2.411e4, Energy = 200.0, Type = "Fission", Spin = 1/2.0 },
         new RadioactiveElement { Isotope = "Sr90", HalfLifeYears = 28.8, Energy = 0.546, Type = "Beta", Spin = 0 },
+        new RadioactiveElement { Isotope = "Co60", HalfLifeYears = 2.88, Energy = 0.006, Type = "Beta", Spin = 2 },
+
         // Add more radioactive elements as needed
     };
 
