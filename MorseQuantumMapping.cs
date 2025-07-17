@@ -1,4 +1,4 @@
-csharp
+
 public class MorseQuantumMapping
 {
     public string Character { get; set; }

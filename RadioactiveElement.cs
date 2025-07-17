@@ -1,4 +1,4 @@
-csharp
+
 public class RadioactiveElement
 {
     public string Isotope { get; set; }

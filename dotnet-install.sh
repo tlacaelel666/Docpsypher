@@ -350,7 +350,7 @@ get_normalized_architecture_from_architecture() {
 
     local architecture="$(to_lowercase "$1")"
 
-    if [[ $architecture == <auto> ]]; then
+    if [[ $architecture == auto ]]; then
         machine_architecture="$(get_machine_architecture)"
         if [[ "$machine_architecture" == "armv6-or-below" ]]; then
             say_err "Architecture `$machine_architecture` not supported. If you think this is a bug, report it at https://github.com/dotnet/install-scripts/issues"
