@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -13,12 +14,16 @@ import { QuantumFingerprint } from './quantum-fingerprint';
 import { DocumentAnalysisDialog } from './document-analysis-dialog';
 import { DocumentShareDialog } from './document-share-dialog'; // Import the new dialog
 import type { Document } from '@/types/document';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const documentsData: Document[] = [
   { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado', analysis: { isAuthentic: true } },
   { id: 'doc-002', name: 'Acta_de_Nacimiento.png', type: 'Legal', date: '2023-09-20', status: 'Verificado', analysis: { isAuthentic: true } },
   { id: 'doc-003', name: 'Diploma_Universitario.pdf', type: 'Académico', date: '2023-11-01', status: 'Pendiente', analysis: null },
   { id: 'doc-004', name: 'Comprobante_de_Domicilio.jpg', type: 'Servicios', date: '2023-10-28', status: 'Verificado', analysis: { isAuthentic: true } },
+  { id: 'doc-005', name: 'Contrato_Laboral.pdf', type: 'Laboral', date: '2023-11-10', status: 'Verificado', analysis: { isAuthentic: true } },
+  { id: 'doc-006', name: 'Factura_Fiscal.xml', type: 'Fiscal', date: '2023-11-12', status: 'Rechazado', analysis: { isAuthentic: false } },
+  { id: 'doc-007', name: 'Certificado_Medico.jpg', type: 'Salud', date: '2023-11-14', status: 'Pendiente', analysis: null },
 ];
 
 const accessLogData = [
@@ -81,67 +86,69 @@ export function DigitalLockerApp() {
                   <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y verificados por IA.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nombre del Documento</TableHead>
-                        <TableHead>Categoría</TableHead>
-                        <TableHead>Fecha de Carga</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead className="text-right">Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {documents.map((doc) => (
-                        <TableRow key={doc.id}>
-                          <TableCell className="font-medium">{doc.name}</TableCell>
-                          <TableCell>{doc.type}</TableCell>
-                          <TableCell>{doc.date}</TableCell>
-                          <TableCell>
-                            <Badge variant={doc.status === 'Verificado' ? 'default' : doc.status === 'Rechazado' ? 'destructive' : 'secondary'} className={cn(
-                              doc.status === 'Verificado' && 'bg-green-500/80 text-white',
-                              doc.status === 'Pendiente' && 'bg-yellow-500/80 text-black',
-                              doc.status === 'Rechazado' && 'bg-red-500/80 text-white'
-                            )}>
-                              {doc.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right space-x-1">
-                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => setSharingDoc(doc)}>
-                                  <Share2 className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Compartir Documento</p>
-                              </TooltipContent>
-                            </Tooltip>
-                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" disabled={!doc.analysis}>
-                                  <ScanLine className="h-4 w-4 text-primary" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Ver Análisis de IA</p>
-                              </TooltipContent>
-                            </Tooltip>
-                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Eliminar Documento</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TableCell>
+                  <ScrollArea className="h-[400px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre del Documento</TableHead>
+                          <TableHead>Categoría</TableHead>
+                          <TableHead>Fecha de Carga</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {documents.map((doc) => (
+                          <TableRow key={doc.id}>
+                            <TableCell className="font-medium">{doc.name}</TableCell>
+                            <TableCell>{doc.type}</TableCell>
+                            <TableCell>{doc.date}</TableCell>
+                            <TableCell>
+                              <Badge variant={doc.status === 'Verificado' ? 'default' : doc.status === 'Rechazado' ? 'destructive' : 'secondary'} className={cn(
+                                doc.status === 'Verificado' && 'bg-green-500/80 text-white',
+                                doc.status === 'Pendiente' && 'bg-yellow-500/80 text-black',
+                                doc.status === 'Rechazado' && 'bg-red-500/80 text-white'
+                              )}>
+                                {doc.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right space-x-1">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => setSharingDoc(doc)}>
+                                    <Share2 className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Compartir Documento</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" disabled={!doc.analysis}>
+                                    <ScanLine className="h-4 w-4 text-primary" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Ver Análisis de IA</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Eliminar Documento</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
                 </CardContent>
               </Card>
             </div>
