@@ -108,68 +108,71 @@ export function DigitalLockerApp() {
                   <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y verificados por IA.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[400px]">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nombre del Documento</TableHead>
-                          <TableHead>Categoría</TableHead>
-                          <TableHead>Fecha de Carga</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {documents.map((doc) => (
-                          <TableRow key={doc.id}>
-                            <TableCell className="font-medium">{doc.name}</TableCell>
-                            <TableCell>{doc.type}</TableCell>
-                            <TableCell>{doc.date}</TableCell>
-                            <TableCell>
-                              <Badge variant={doc.status === 'Verificado' ? 'default' : doc.status === 'Rechazado' ? 'destructive' : 'secondary'} className={cn(
-                                doc.status === 'Verificado' && 'bg-green-500/80 text-white',
-                                doc.status === 'Pendiente' && 'bg-yellow-500/80 text-black',
-                                doc.status === 'Rechazado' && 'bg-red-500/80 text-white'
-                              )}>
-                                {doc.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right space-x-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => handleShareDocument(doc)}>
-                                    <Share2 className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Compartir Documento</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" disabled={!doc.analysis}>
-                                    <ScanLine className="h-4 w-4 text-primary" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Ver Análisis de IA</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Eliminar Documento</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TableCell>
+                  <ScrollArea className="h-[400px] w-full">
+                    <div className="relative w-full overflow-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Nombre del Documento</TableHead>
+                            <TableHead>Categoría</TableHead>
+                            <TableHead>Fecha de Carga</TableHead>
+                            <TableHead>Estado</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {documents.map((doc) => (
+                            <TableRow key={doc.id}>
+                              <TableCell className="font-medium whitespace-nowrap">{doc.name}</TableCell>
+                              <TableCell className="whitespace-nowrap">{doc.type}</TableCell>
+                              <TableCell className="whitespace-nowrap">{doc.date}</TableCell>
+                              <TableCell>
+                                <Badge variant={doc.status === 'Verificado' ? 'default' : doc.status === 'Rechazado' ? 'destructive' : 'secondary'} className={cn(
+                                  'whitespace-nowrap',
+                                  doc.status === 'Verificado' && 'bg-green-500/80 text-white',
+                                  doc.status === 'Pendiente' && 'bg-yellow-500/80 text-black',
+                                  doc.status === 'Rechazado' && 'bg-red-500/80 text-white'
+                                )}>
+                                  {doc.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right space-x-1 whitespace-nowrap">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => handleShareDocument(doc)}>
+                                      <Share2 className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Compartir Documento</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" disabled={!doc.analysis}>
+                                      <ScanLine className="h-4 w-4 text-primary" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Ver Análisis de IA</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Eliminar Documento</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </ScrollArea>
                 </CardContent>
               </Card>
