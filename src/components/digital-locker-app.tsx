@@ -16,7 +16,7 @@ import { DocumentShareDialog } from './document-share-dialog'; // Import the new
 import type { Document } from '@/types/document';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const documentsData: Document[] = [
+const initialDocuments: Document[] = [
   { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado', analysis: { isAuthentic: true } },
   { id: 'doc-002', name: 'Acta_de_Nacimiento.png', type: 'Legal', date: '2023-09-20', status: 'Verificado', analysis: { isAuthentic: true } },
   { id: 'doc-003', name: 'Diploma_Universitario.pdf', type: 'Académico', date: '2023-11-01', status: 'Pendiente', analysis: null },
@@ -26,25 +26,47 @@ const documentsData: Document[] = [
   { id: 'doc-007', name: 'Certificado_Medico.jpg', type: 'Salud', date: '2023-11-14', status: 'Pendiente', analysis: null },
 ];
 
-const accessLogData = [
+const initialAccessLogs = [
   { id: 'log-001', entity: 'Servicio de Autenticación Gubernamental', doc: 'Pasaporte.pdf', date: '2023-11-05 10:30', status: 'Aprobado' },
   { id: 'log-002', entity: 'Universidad Nacional', doc: 'Diploma_Universitario.pdf', date: '2023-11-04 15:00', status: 'Aprobado' },
   { id: 'log-003', entity: 'Entidad no reconocida', doc: 'Acta_de_Nacimiento.png', date: '2023-11-03 09:15', status: 'Denegado' },
 ];
 
+interface AccessLog {
+    id: string;
+    entity: string;
+    doc: string;
+    date: string;
+    status: 'Aprobado' | 'Denegado';
+}
+
 
 export function DigitalLockerApp() {
-  const [documents, setDocuments] = useState<Document[]>(documentsData);
+  const [documents, setDocuments] = useState<Document[]>(initialDocuments);
+  const [accessLogs, setAccessLogs] = useState<AccessLog[]>(initialAccessLogs);
   const [isQuantumVerified, setIsQuantumVerified] = useState(true);
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
-  const [sharingDoc, setSharingDoc] = useState<Document | null>(null); // State for the doc being shared
+  const [sharingDoc, setSharingDoc] = useState<Document | null>(null);
 
   const handleDelete = (docId: string) => {
     setDocuments(documents.filter(doc => doc.id !== docId));
   }
   
   const handleDocumentVerified = (newDocument: Document) => {
-    setDocuments(prev => [newDocument, ...prev]);
+    setDocuments(prev => [newDocument, ...prev.filter(d => d.id !== newDocument.id)]);
+  };
+
+  const handleShareDocument = (doc: Document) => {
+    setSharingDoc(doc);
+    // Simulate adding an access log entry when a document is shared
+    const newLog: AccessLog = {
+        id: `log-${Date.now()}`,
+        entity: 'Tú (generación de SKU)',
+        doc: doc.name,
+        date: new Date().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' }),
+        status: 'Aprobado'
+    };
+    setAccessLogs(prevLogs => [newLog, ...prevLogs]);
   };
 
   return (
@@ -115,7 +137,7 @@ export function DigitalLockerApp() {
                             <TableCell className="text-right space-x-1">
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => setSharingDoc(doc)}>
+                                  <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => handleShareDocument(doc)}>
                                     <Share2 className="h-4 w-4" />
                                   </Button>
                                 </TooltipTrigger>
@@ -188,7 +210,7 @@ export function DigitalLockerApp() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-4">
-                    {accessLogData.map(log => (
+                    {accessLogs.map(log => (
                       <li key={log.id} className="flex items-start gap-3 text-sm">
                         <div>
                           <Badge variant={log.status === 'Aprobado' ? 'default' : 'destructive'} className={cn(log.status === 'Aprobado' ? 'bg-blue-500/80' : '')}>
@@ -216,7 +238,6 @@ export function DigitalLockerApp() {
           onOpenChange={setIsAnalysisDialogOpen}
           onDocumentVerified={handleDocumentVerified}
         />
-        {/* Render the share dialog */}
         <DocumentShareDialog 
           document={sharingDoc}
           open={!!sharingDoc}
