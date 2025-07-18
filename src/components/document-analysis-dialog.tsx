@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Progress } from './ui/progress';
-import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import type { Document } from '@/types/document';
 import { cn } from '@/lib/utils';
@@ -78,7 +77,6 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
         toast({
             title: isAuthentic ? "Documento Añadido" : "Registro Guardado",
             description: `"${fileName}" se ha guardado en tu portafolio como ${isAuthentic ? 'Verificado' : 'Rechazado'}.`,
-            variant: isAuthentic ? 'default' : 'destructive',
         });
         handleClose();
     }
@@ -256,7 +254,7 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
         <div className="py-4">{renderContent()}</div>
         {analysisResult && (
              <DialogFooter>
-                 <Button variant="ghost" onClick={handleClose}>Cerrar</Button>
+                 <Button variant="ghost" onClick={handleClose}>Cancelar</Button>
                  <Button onClick={handleAddToLocker}>
                     {analysisResult.analysis.isAuthentic ? 'Añadir al Portafolio' : 'Guardar Registro Rechazado'}
                  </Button>

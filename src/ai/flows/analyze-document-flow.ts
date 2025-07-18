@@ -13,11 +13,13 @@
 
 import {ai} from '@/ai/genkit';
 import {
-  AnalyzeDocumentInputSchema,
   type AnalyzeDocumentInput,
-  AnalyzeDocumentOutputSchema,
   type AnalyzeDocumentOutput,
+  AnalyzeDocumentInputSchema,
+  AnalyzeDocumentOutputSchema,
 } from '@/types/document-analysis';
+import errorHandler from '@/lib/error-handler';
+import { ErrorType, ErrorSeverity } from '@/types/error-handling';
 
 // Función exportada que los componentes de React pueden llamar
 export async function analyzeDocument(
@@ -70,10 +72,24 @@ const analyzeDocumentFlow = ai.defineFlow(
     outputSchema: AnalyzeDocumentOutputSchema,
   },
   async (input) => {
-    const {output} = await analyzeDocumentPrompt(input);
-    if (!output) {
-      throw new Error("El modelo de IA no pudo generar un análisis.");
+    try {
+        const {output} = await analyzeDocumentPrompt(input);
+        if (!output) {
+          throw new Error("El modelo de IA no pudo generar un análisis (output nulo).");
+        }
+        return output;
+    } catch (error: any) {
+        errorHandler.logError(
+            ErrorType.API_CALL,
+            'Falló la llamada al prompt de análisis de documento',
+            ErrorSeverity.CRITICAL,
+            { 
+                error: error.message,
+                flowInput: input,
+            }
+        );
+        // Relanzar el error para que el cliente lo maneje (e.g., mostrar un toast)
+        throw new Error("El análisis del documento falló. Por favor, revisa los logs del sistema.");
     }
-    return output;
   }
 );
