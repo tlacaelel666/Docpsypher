@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut } from 'lucide-react';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { QuantumFingerprint } from './quantum-fingerprint';
 import { DocumentAnalysisDialog } from './document-analysis-dialog';
+import { DocumentShareDialog } from './document-share-dialog'; // Import the new dialog
 import type { Document } from '@/types/document';
 
 const documentsData: Document[] = [
@@ -31,6 +32,7 @@ export function DigitalLockerApp() {
   const [documents, setDocuments] = useState<Document[]>(documentsData);
   const [isQuantumVerified, setIsQuantumVerified] = useState(true);
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [sharingDoc, setSharingDoc] = useState<Document | null>(null); // State for the doc being shared
 
   const handleDelete = (docId: string) => {
     setDocuments(documents.filter(doc => doc.id !== docId));
@@ -105,6 +107,16 @@ export function DigitalLockerApp() {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right space-x-1">
+                             <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => setSharingDoc(doc)}>
+                                  <Share2 className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Compartir Documento</p>
+                              </TooltipContent>
+                            </Tooltip>
                              <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button variant="ghost" size="icon" disabled={!doc.analysis}>
@@ -196,6 +208,12 @@ export function DigitalLockerApp() {
           open={isAnalysisDialogOpen}
           onOpenChange={setIsAnalysisDialogOpen}
           onDocumentVerified={handleDocumentVerified}
+        />
+        {/* Render the share dialog */}
+        <DocumentShareDialog 
+          document={sharingDoc}
+          open={!!sharingDoc}
+          onOpenChange={(isOpen) => !isOpen && setSharingDoc(null)}
         />
       </div>
     </TooltipProvider>
