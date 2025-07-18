@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,8 +9,6 @@ import { Label } from "@/components/ui/label";
 import { FolderLock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
@@ -22,19 +21,26 @@ export default function LoginPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
+
+    // Dummy user credentials for testing
+    const dummyEmail = 'test@test.com';
+    const dummyPassword = 'password';
+
+    if (email === dummyEmail && password === dummyPassword) {
+      toast({
+        title: "Inicio de sesión exitoso",
+        description: "Bienvenido de vuelta.",
+      });
       router.push('/dashboard');
-    } catch (error: any) {
-      console.error("Error al iniciar sesión:", error);
+    } else {
       toast({
         title: "Error de inicio de sesión",
         description: "Las credenciales son incorrectas. Por favor, inténtalo de nuevo.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
+    
+    setIsLoading(false);
   };
 
   return (
