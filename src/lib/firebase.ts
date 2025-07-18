@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -15,8 +15,20 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
+let app: FirebaseApp;
+let auth: Auth;
 
-// Initialize Firebase
-// We check if the app is already initialized to avoid errors during hot-reloading.
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
+// Initialize Firebase only if the API key is provided
+if (firebaseConfig.apiKey) {
+  // We check if the app is already initialized to avoid errors during hot-reloading.
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+} else {
+    // If you are seeing this log, it's likely you need to create a .env.local file
+    // with your Firebase credentials.
+    console.log("Firebase API Key not found. Firebase is not initialized.");
+}
+
+
+// @ts-ignore
+export { app, auth };
