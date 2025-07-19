@@ -69,6 +69,15 @@ export function DigitalLockerApp() {
     setAccessLogs(prevLogs => [newLog, ...prevLogs]);
   };
 
+  const getStatusClass = (status: Document['status']) => {
+    switch (status) {
+        case 'Verificado': return 'bg-green-500';
+        case 'Pendiente': return 'bg-yellow-500';
+        case 'Rechazado': return 'bg-red-500';
+        default: return 'bg-gray-500';
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background text-foreground">
@@ -108,7 +117,7 @@ export function DigitalLockerApp() {
                   <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y verificados por IA.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[400px] w-full whitespace-nowrap rounded-md border">
+                   <ScrollArea className="h-[400px] w-full rounded-md border">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -126,14 +135,14 @@ export function DigitalLockerApp() {
                             <TableCell>{doc.type}</TableCell>
                             <TableCell>{doc.date}</TableCell>
                             <TableCell>
-                              <Badge variant={doc.status === 'Verificado' ? 'default' : doc.status === 'Rechazado' ? 'destructive' : 'secondary'} className={cn(
-                                'whitespace-nowrap',
-                                doc.status === 'Verificado' && 'bg-green-500/80 text-white',
-                                doc.status === 'Pendiente' && 'bg-yellow-500/80 text-black',
-                                doc.status === 'Rechazado' && 'bg-red-500/80 text-white'
-                              )}>
-                                {doc.status}
-                              </Badge>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <div className={cn("h-3 w-3 rounded-full", getStatusClass(doc.status))} />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{doc.status}</p>
+                                    </TooltipContent>
+                                </Tooltip>
                             </TableCell>
                             <TableCell className="text-right space-x-1">
                               <Tooltip>
