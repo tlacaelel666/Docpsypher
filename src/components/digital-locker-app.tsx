@@ -118,7 +118,7 @@ export function DigitalLockerApp() {
                   <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y verificados por IA.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                   <ScrollArea className="h-[400px] w-full rounded-md border">
+                   <ScrollArea className="h-[400px] w-full rounded-md border p-4">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -153,7 +153,7 @@ export function DigitalLockerApp() {
                                     <span className="sr-only">Más acciones</span>
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
+                                <DropdownMenuContent align="start">
                                   <DropdownMenuItem 
                                     disabled={doc.status !== 'Verificado'} 
                                     onClick={() => handleShareDocument(doc)}
