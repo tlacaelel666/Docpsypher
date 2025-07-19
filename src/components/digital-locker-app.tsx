@@ -3,10 +3,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2 } from 'lucide-react';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -144,37 +145,35 @@ export function DigitalLockerApp() {
                                     </TooltipContent>
                                 </Tooltip>
                             </TableCell>
-                            <TableCell className="text-right space-x-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" disabled={doc.status !== 'Verificado'} onClick={() => handleShareDocument(doc)}>
-                                    <Share2 className="h-4 w-4" />
+                            <TableCell className="text-right">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Más acciones</span>
                                   </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Compartir Documento</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" disabled={!doc.analysis}>
-                                    <ScanLine className="h-4 w-4 text-primary" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Ver Análisis de IA</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Eliminar Documento</p>
-                                </TooltipContent>
-                              </Tooltip>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem 
+                                    disabled={doc.status !== 'Verificado'} 
+                                    onClick={() => handleShareDocument(doc)}
+                                  >
+                                    <Share2 className="mr-2 h-4 w-4" />
+                                    <span>Compartir</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem disabled={!doc.analysis}>
+                                    <ScanLine className="mr-2 h-4 w-4" />
+                                    <span>Ver Análisis</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={() => handleDelete(doc.id)}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <span>Eliminar</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </TableCell>
                           </TableRow>
                         ))}
