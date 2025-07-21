@@ -3,11 +3,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Calendar, Tag, FileType } from 'lucide-react';
+import { FileText, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Calendar, Tag, FileType, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { QuantumFingerprint } from './quantum-fingerprint';
@@ -17,6 +16,7 @@ import type { Document } from '@/types/document';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DocSaferLogo } from './doc-safer-logo';
 import { DocumentAnalysisResultDialog } from './document-analysis-result-dialog';
+import { Badge } from './ui/badge';
 
 const initialDocuments: Document[] = [
   { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado', analysis: { isAuthentic: true, confidenceScore: 0.98, reasoning: "La estructura del documento, tipografía y sellos coinciden con los patrones esperados para un pasaporte válido. No se detectaron anomalías topológicas significativas.", extractedData: { "Nombre": "Juan Pérez", "Número de Pasaporte": "A123B456C" }, topologicalAnomalies: [] } },
@@ -75,6 +75,22 @@ export function DigitalLockerApp() {
   const handleShowAnalysis = (doc: Document) => {
     setSelectedDoc(doc);
     setIsResultDialogOpen(true);
+  };
+
+  const handleRefreshAudit = () => {
+    const pendingDoc = documents.find(d => d.status === 'Pendiente');
+    const newLog: AccessLog = {
+        id: `log-${Date.now()}`,
+        entity: 'Servicio de Verificación Automática',
+        doc: pendingDoc ? pendingDoc.name : "Certificado_Medico.jpg",
+        date: new Date().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' }),
+        status: 'Aprobado'
+    };
+    setAccessLogs(prevLogs => [newLog, ...prevLogs]);
+
+    if (pendingDoc) {
+        setDocuments(docs => docs.map(d => d.id === pendingDoc.id ? {...d, status: 'Verificado'} : d));
+    }
   };
 
   const getStatusClass = (status: Document['status']) => {
@@ -141,17 +157,19 @@ export function DigitalLockerApp() {
                               <DropdownMenuContent align="start">
                                 <DropdownMenuLabel>Información</DropdownMenuLabel>
                                  <DropdownMenuItem disabled className="opacity-100">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="flex items-center">
-                                        <div className={cn("h-3 w-3 rounded-full mr-2", getStatusClass(doc.status))} />
-                                        <span>Estado: {doc.status}</span>
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>{doc.status}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center w-full">
+                                          <div className={cn("h-3 w-3 rounded-full mr-2", getStatusClass(doc.status))} />
+                                          <span>Estado: {doc.status}</span>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>{doc.status}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
                                  </DropdownMenuItem>
                                  <DropdownMenuItem disabled className="opacity-100">
                                       <Tag className="mr-2 h-4 w-4" />
@@ -230,9 +248,22 @@ export function DigitalLockerApp() {
               </Card>
 
               <Card className="shadow-lg animate-fadeIn border-primary/20">
-                <CardHeader>
-                  <CardTitle className="font-headline text-2xl flex items-center gap-2"><Clock /> Auditoría de Accesos</CardTitle>
-                  <CardDescription>Accesos recientes auditados a tus documentos.</CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle className="font-headline text-2xl flex items-center gap-2"><Clock /> Auditoría de Accesos</CardTitle>
+                        <CardDescription>Accesos recientes auditados a tus documentos.</CardDescription>
+                    </div>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" onClick={handleRefreshAudit}>
+                                <RefreshCw className="h-4 w-4"/>
+                                <span className="sr-only">Actualizar Auditoría</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Actualizar Auditoría</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-4">
@@ -252,9 +283,6 @@ export function DigitalLockerApp() {
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter>
-                    <Button variant="outline" className="w-full">Ver Auditoría Completa</Button>
-                </CardFooter>
               </Card>
             </div>
           </div>
