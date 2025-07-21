@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Info, Calendar, Tag } from 'lucide-react';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Info, Calendar, Tag, FileType } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
@@ -132,15 +132,28 @@ export function DigitalLockerApp() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Información</DropdownMenuLabel>
                                <DropdownMenuItem disabled className="opacity-100">
-                                <div className="flex items-center">
-                                    <div className={cn("h-3 w-3 rounded-full mr-2", getStatusClass(doc.status))} />
-                                    <span>Estado: {doc.status}</span>
-                                </div>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center">
+                                      <div className={cn("h-3 w-3 rounded-full mr-2", getStatusClass(doc.status))} />
+                                      <span>Estado: {doc.status}</span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{doc.status}</p>
+                                  </TooltipContent>
+                                </Tooltip>
                                </DropdownMenuItem>
                                <DropdownMenuItem disabled className="opacity-100">
                                     <Tag className="mr-2 h-4 w-4" />
                                     <span>Categoría: {doc.type}</span>
                                </DropdownMenuItem>
+                                {doc.description && (
+                                   <DropdownMenuItem disabled className="opacity-100">
+                                        <FileType className="mr-2 h-4 w-4" />
+                                        <span>Desc: {doc.description}</span>
+                                   </DropdownMenuItem>
+                                )}
                                <DropdownMenuItem disabled className="opacity-100">
                                     <Calendar className="mr-2 h-4 w-4" />
                                     <span>Subido: {doc.date}</span>

@@ -17,10 +17,12 @@ import { Progress } from './ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import type { Document } from '@/types/document';
 import { cn } from '@/lib/utils';
+import { Textarea } from './ui/textarea';
 
 const FormSchema = z.object({
   file: z.any().refine(files => files?.length === 1, 'Debes seleccionar un archivo.'),
   documentType: z.string({ required_error: 'Debes seleccionar un tipo de documento.' }),
+  description: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof FormSchema>;
@@ -43,6 +45,7 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
   });
 
   const fileRef = form.register('file');
+  const documentType = form.watch('documentType');
 
   const readFileAsDataURL = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -69,6 +72,7 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
             id: `doc-${Date.now()}`,
             name: fileName,
             type: form.getValues('documentType'),
+            description: form.getValues('description'),
             date: new Date().toISOString().split('T')[0],
             status: isAuthentic ? 'Verificado' : 'Rechazado',
             analysis: analysisResult.analysis,
@@ -222,12 +226,28 @@ export function DocumentAnalysisDialog({ open, onOpenChange, onDocumentVerified 
                     <SelectItem value="Identificación Nacional">Identificación Nacional (DNI/INE)</SelectItem>
                     <SelectItem value="Diploma Académico">Diploma Académico</SelectItem>
                     <SelectItem value="Factura de Servicios">Factura de Servicios</SelectItem>
+                    <SelectItem value="Otro">Otro (especificar)</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
+          {documentType === 'Otro' && (
+             <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                        <Textarea placeholder="Describe brevemente el documento..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          )}
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={handleClose}>Cancelar</Button>
             <Button type="submit">

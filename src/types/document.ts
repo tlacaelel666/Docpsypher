@@ -6,6 +6,7 @@ export interface Document {
     id: string;
     name: string;
     type: string;
+    description?: string; // Nuevo campo opcional para la descripción
     date: string;
     status: 'Verificado' | 'Pendiente' | 'Rechazado';
     analysis: Analysis | null;
