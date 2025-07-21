@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Info, Calendar, Tag, FileType, Atom } from 'lucide-react';
+import { FileText, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Calendar, Tag, FileType } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
@@ -16,14 +16,15 @@ import { DocumentShareDialog } from './document-share-dialog';
 import type { Document } from '@/types/document';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DocSaferLogo } from './doc-safer-logo';
+import { DocumentAnalysisResultDialog } from './document-analysis-result-dialog';
 
 const initialDocuments: Document[] = [
-  { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado', analysis: { isAuthentic: true } },
-  { id: 'doc-002', name: 'Acta_de_Nacimiento.png', type: 'Legal', date: '2023-09-20', status: 'Verificado', analysis: { isAuthentic: true } },
+  { id: 'doc-001', name: 'Pasaporte.pdf', type: 'Identificación', date: '2023-10-15', status: 'Verificado', analysis: { isAuthentic: true, confidenceScore: 0.98, reasoning: "La estructura del documento, tipografía y sellos coinciden con los patrones esperados para un pasaporte válido. No se detectaron anomalías topológicas significativas.", extractedData: { "Nombre": "Juan Pérez", "Número de Pasaporte": "A123B456C" }, topologicalAnomalies: [] } },
+  { id: 'doc-002', name: 'Acta_de_Nacimiento.png', type: 'Legal', date: '2023-09-20', status: 'Verificado', analysis: { isAuthentic: true, confidenceScore: 0.95, reasoning: "El formato y los datos del acta son consistentes. El sello gubernamental presenta la microimpresión correcta.", extractedData: { "Nombre": "Maria Garcia", "Fecha de Nacimiento": "1990-05-20" }, topologicalAnomalies: [] } },
   { id: 'doc-003', name: 'Diploma_Universitario.pdf', type: 'Académico', date: '2023-11-01', status: 'Pendiente', analysis: null },
-  { id: 'doc-004', name: 'Comprobante_de_Domicilio.jpg', type: 'Servicios', date: '2023-10-28', status: 'Verificado', analysis: { isAuthentic: true } },
-  { id: 'doc-005', name: 'Contrato_Laboral.pdf', type: 'Laboral', date: '2023-11-10', status: 'Verificado', analysis: { isAuthentic: true } },
-  { id: 'doc-006', name: 'Factura_Fiscal.xml', type: 'Fiscal', date: '2023-11-12', status: 'Rechazado', analysis: { isAuthentic: false } },
+  { id: 'doc-004', name: 'Comprobante_de_Domicilio.jpg', type: 'Servicios', date: '2023-10-28', status: 'Verificado', analysis: { isAuthentic: true, confidenceScore: 0.92, reasoning: "Dirección y datos del proveedor de servicios validados. Sin alteraciones visibles en la imagen.", extractedData: { "Dirección": "Calle Falsa 123", "Proveedor": "CFE" }, topologicalAnomalies: [] } },
+  { id: 'doc-005', name: 'Contrato_Laboral.pdf', type: 'Laboral', date: '2023-11-10', status: 'Verificado', analysis: { isAuthentic: true, confidenceScore: 0.99, reasoning: "Todas las cláusulas y firmas son legibles y el formato del contrato es estándar.", extractedData: { "Empresa": "Tech Solutions Inc.", "Puesto": "Desarrollador" }, topologicalAnomalies: [] } },
+  { id: 'doc-006', name: 'Factura_Fiscal_alterada.xml', type: 'Fiscal', date: '2023-11-12', status: 'Rechazado', analysis: { isAuthentic: false, confidenceScore: 0.15, reasoning: "Se detectaron múltiples anomalías graves que sugieren una falsificación. El logo de la empresa está pixelado y el espaciado del texto es irregular, lo que indica posible edición digital. Además, la suma de los montos no coincide con el total.", extractedData: { "RFC Emisor": "XYZ123456ABC", "Monto Total": "1500.00" }, topologicalAnomalies: ["Logo de la empresa de baja resolución y con artefactos de compresión.", "Espaciado de línea inconsistente en la sección de descripción de artículos.", "La firma digital parece superpuesta y no integrada en el documento."] } },
   { id: 'doc-007', name: 'Certificado_Medico.jpg', type: 'Salud', date: '2023-11-14', status: 'Pendiente', analysis: null },
 ];
 
@@ -47,7 +48,9 @@ export function DigitalLockerApp() {
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>(initialAccessLogs);
   const [isQuantumVerified, setIsQuantumVerified] = useState(true);
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
   const [sharingDoc, setSharingDoc] = useState<Document | null>(null);
+  const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
 
   const handleDelete = (docId: string) => {
     setDocuments(documents.filter(doc => doc.id !== docId));
@@ -59,7 +62,6 @@ export function DigitalLockerApp() {
 
   const handleShareDocument = (doc: Document) => {
     setSharingDoc(doc);
-    // Simulate adding an access log entry when a document is shared
     const newLog: AccessLog = {
         id: `log-${Date.now()}`,
         entity: 'Tú (generación de SKU)',
@@ -68,6 +70,11 @@ export function DigitalLockerApp() {
         status: 'Aprobado'
     };
     setAccessLogs(prevLogs => [newLog, ...prevLogs]);
+  };
+
+  const handleShowAnalysis = (doc: Document) => {
+    setSelectedDoc(doc);
+    setIsResultDialogOpen(true);
   };
 
   const getStatusClass = (status: Document['status']) => {
@@ -131,7 +138,7 @@ export function DigitalLockerApp() {
                                   <span className="sr-only">Más acciones para {doc.name}</span>
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
+                              <DropdownMenuContent align="start">
                                 <DropdownMenuLabel>Información</DropdownMenuLabel>
                                  <DropdownMenuItem disabled className="opacity-100">
                                   <Tooltip>
@@ -168,7 +175,10 @@ export function DigitalLockerApp() {
                                   <Share2 className="mr-2 h-4 w-4" />
                                   <span>Compartir (SKU/QR)</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem disabled={!doc.analysis}>
+                                <DropdownMenuItem 
+                                  disabled={!doc.analysis}
+                                  onClick={() => doc.analysis && handleShowAnalysis(doc)}
+                                >
                                   <ScanLine className="mr-2 h-4 w-4" />
                                   <span>Ver Análisis Forense</span>
                                 </DropdownMenuItem>
@@ -258,6 +268,11 @@ export function DigitalLockerApp() {
           document={sharingDoc}
           open={!!sharingDoc}
           onOpenChange={(isOpen) => !isOpen && setSharingDoc(null)}
+        />
+        <DocumentAnalysisResultDialog
+            document={selectedDoc}
+            open={isResultDialogOpen}
+            onOpenChange={setIsResultDialogOpen}
         />
       </div>
     </TooltipProvider>
