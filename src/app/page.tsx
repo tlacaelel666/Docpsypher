@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { FolderLock, ShieldCheck, BrainCircuit } from "lucide-react";
+import { ShieldCheck, BrainCircuit, Atom } from "lucide-react";
 import Link from "next/link";
+import { DocSaferLogo } from "@/components/doc-safer-logo";
 
 export default function WelcomePage() {
   return (
     <div className="dark min-h-screen bg-background text-foreground flex flex-col">
       <header className="container mx-auto py-4 px-4 md:px-8 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <FolderLock className="h-8 w-8 text-primary" />
+          <DocSaferLogo className="h-8 w-8 text-primary" />
           <h1 className="text-xl font-bold font-headline tracking-tighter">
             DocSafer
           </h1>
@@ -28,7 +29,7 @@ export default function WelcomePage() {
             Seguridad de Próxima Generación
           </Badge>
           <h2 className="text-4xl md:text-6xl font-extrabold font-headline tracking-tighter mb-4 animate-fadeIn">
-            Tu Bóveda Digital.
+            El Guardián Entrelazado
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
             Una plataforma revolucionaria para almacenar, verificar y compartir tu documentación más importante con seguridad cuántica y auditoría inteligente.
@@ -54,7 +55,7 @@ export default function WelcomePage() {
             <p className="text-sm text-muted-foreground">Aprovechamos la decoherencia para crear una firma de seguridad única e inclonable.</p>
           </div>
           <div className="flex flex-col items-center md:items-start">
-            <FolderLock className="h-8 w-8 text-primary mb-2" />
+            <Atom className="h-8 w-8 text-primary mb-2" />
             <h3 className="font-bold mb-1">Auditoría Transparente</h3>
             <p className="text-sm text-muted-foreground">Control total sobre quién accede a tus documentos y cuándo, con un registro inmutable.</p>
           </div>

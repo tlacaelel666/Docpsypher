@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FolderLock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from '@/hooks/use-toast';
+import { DocSaferLogo } from '@/components/doc-safer-logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function LoginPage() {
     if (email === dummyEmail && password === dummyPassword) {
       toast({
         title: "Inicio de sesión exitoso",
-        description: "Bienvenido de vuelta.",
+        description: "Bienvenido de vuelta, Guardián.",
       });
       router.push('/dashboard');
     } else {
@@ -46,13 +46,13 @@ export default function LoginPage() {
   return (
     <div className="dark min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
-        <Card className="shadow-lg animate-fadeIn">
+        <Card className="shadow-lg animate-fadeIn border-primary/20">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <FolderLock className="h-10 w-10 text-primary" />
+              <DocSaferLogo className="h-12 w-12 text-primary" />
             </div>
             <CardTitle className="font-headline text-3xl">Bienvenido a DocSafer</CardTitle>
-            <CardDescription>Inicia sesión para acceder a tu portafolio digital.</CardDescription>
+            <CardDescription>Inicia sesión en tu bóveda cuántica.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
