@@ -28,7 +28,7 @@ export default function WelcomePage() {
             Seguridad de Próxima Generación
           </Badge>
           <h2 className="text-4xl md:text-6xl font-extrabold font-headline tracking-tighter mb-4 animate-fadeIn">
-            Tu Bóveda Digital, Reimaginada.
+            Tu Bóveda Digital.
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
             Una plataforma revolucionaria para almacenar, verificar y compartir tu documentación más importante con seguridad cuántica y auditoría inteligente.

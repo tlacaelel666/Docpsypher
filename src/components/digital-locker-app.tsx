@@ -3,11 +3,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal } from 'lucide-react';
+import { FileText, FolderLock, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, ScanLine, LogOut, Share2, MoreHorizontal, Info, Calendar, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -118,67 +117,59 @@ export function DigitalLockerApp() {
                   <CardDescription>Tu colección segura de documentos digitales. Todos los archivos están encriptados y verificados por IA.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                   <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nombre del Documento</TableHead>
-                          <TableHead>Categoría</TableHead>
-                          <TableHead>Fecha de Carga</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {documents.map((doc) => (
-                          <TableRow key={doc.id}>
-                            <TableCell className="font-medium">{doc.name}</TableCell>
-                            <TableCell>{doc.type}</TableCell>
-                            <TableCell>{doc.date}</TableCell>
-                            <TableCell>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        <div className={cn("h-3 w-3 rounded-full", getStatusClass(doc.status))} />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{doc.status}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Más acciones</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start">
-                                  <DropdownMenuItem 
-                                    disabled={doc.status !== 'Verificado'} 
-                                    onClick={() => handleShareDocument(doc)}
-                                  >
-                                    <Share2 className="mr-2 h-4 w-4" />
-                                    <span>Compartir</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem disabled={!doc.analysis}>
-                                    <ScanLine className="mr-2 h-4 w-4" />
-                                    <span>Ver Análisis</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem 
-                                    className="text-destructive focus:text-destructive"
-                                    onClick={() => handleDelete(doc.id)}
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    <span>Eliminar</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                   <ScrollArea className="h-[400px] w-full">
+                    <div className="space-y-2 p-1">
+                      {documents.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                          <p className="font-medium truncate pr-4">{doc.name}</p>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Más acciones para {doc.name}</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Información</DropdownMenuLabel>
+                               <DropdownMenuItem disabled className="opacity-100">
+                                <div className="flex items-center">
+                                    <div className={cn("h-3 w-3 rounded-full mr-2", getStatusClass(doc.status))} />
+                                    <span>Estado: {doc.status}</span>
+                                </div>
+                               </DropdownMenuItem>
+                               <DropdownMenuItem disabled className="opacity-100">
+                                    <Tag className="mr-2 h-4 w-4" />
+                                    <span>Categoría: {doc.type}</span>
+                               </DropdownMenuItem>
+                               <DropdownMenuItem disabled className="opacity-100">
+                                    <Calendar className="mr-2 h-4 w-4" />
+                                    <span>Subido: {doc.date}</span>
+                               </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                disabled={doc.status !== 'Verificado'} 
+                                onClick={() => handleShareDocument(doc)}
+                              >
+                                <Share2 className="mr-2 h-4 w-4" />
+                                <span>Compartir (SKU/QR)</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem disabled={!doc.analysis}>
+                                <ScanLine className="mr-2 h-4 w-4" />
+                                <span>Ver Análisis Forense</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => handleDelete(doc.id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                <span>Eliminar</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      ))}
+                    </div>
                   </ScrollArea>
                 </CardContent>
               </Card>
@@ -256,3 +247,5 @@ export function DigitalLockerApp() {
     </TooltipProvider>
   );
 }
+
+    
