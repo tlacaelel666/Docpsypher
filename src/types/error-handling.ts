@@ -10,6 +10,7 @@ export enum ErrorType {
     RENDERING = "rendering",
     AUTHENTICATION = "authentication",
     UNKNOWN_SYSTEM = "unknown_system",
+    INFO = "INFO",
 }
 
 export enum ErrorSeverity {
@@ -17,6 +18,8 @@ export enum ErrorSeverity {
     WARNING = "warning",
     ERROR = "error",
     CRITICAL = "critical",
+    LOW = "LOW",
+    HIGH = "HIGH",
 }
 
 export interface ErrorContext {
