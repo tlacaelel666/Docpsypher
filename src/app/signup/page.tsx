@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -71,6 +70,11 @@ export default function SignupPage() {
   return (
     <div className="dark min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
+        <div className="text-center mb-4">
+          <Link href="/" className="text-sm text-primary hover:underline">
+            ‹ Volver al Inicio
+          </Link>
+        </div>
         <Card className="shadow-lg animate-fadeIn border-primary/20">
           <CardHeader className="text-center">
              <div className="flex justify-center mb-4">
