@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import QRCode from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -9,10 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { DataItem } from '@/types/document';
-import { QrCode, ClipboardCopy, Check, UserCheck, ShieldCheck } from 'lucide-react';
+import { ShieldCheck, ClipboardCopy, Check } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Checkbox } from './ui/checkbox';
-import { cn } from '@/lib/utils';
 
 interface CreateAccessDialogProps {
   open: boolean;
