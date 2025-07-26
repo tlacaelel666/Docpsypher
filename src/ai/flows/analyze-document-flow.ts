@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Flujo de IA robusto para el análisis forense de documentos.
@@ -152,22 +153,22 @@ function validateOutput(output: any): ValidationResult {
     const typedOutput = output as AnalyzeDocumentOutput;
 
     // Validar rango de confianza
-    if (typedOutput.confidenceScore < CONFIG.MIN_CONFIDENCE_THRESHOLD || 
-        typedOutput.confidenceScore > CONFIG.MAX_CONFIDENCE_THRESHOLD) {
-      errors.push(`Score de confianza fuera de rango: ${typedOutput.confidenceScore}`);
+    if (typedOutput.analysis.confidenceScore < CONFIG.MIN_CONFIDENCE_THRESHOLD || 
+        typedOutput.analysis.confidenceScore > CONFIG.MAX_CONFIDENCE_THRESHOLD) {
+      errors.push(`Score de confianza fuera de rango: ${typedOutput.analysis.confidenceScore}`);
     }
 
     // Validar coherencia entre isAuthentic y confidenceScore
-    if (typedOutput.isAuthentic && typedOutput.confidenceScore < 0.6) {
+    if (typedOutput.analysis.isAuthentic && typedOutput.analysis.confidenceScore < 0.6) {
       warnings.push('Documento marcado como auténtico pero con baja confianza');
     }
 
-    if (!typedOutput.isAuthentic && typedOutput.confidenceScore > 0.7) {
+    if (!typedOutput.analysis.isAuthentic && typedOutput.analysis.confidenceScore > 0.7) {
       warnings.push('Documento marcado como falso pero con alta confianza');
     }
 
     // Validar que reasoning no esté vacío
-    if (!typedOutput.reasoning || typedOutput.reasoning.trim().length === 0) {
+    if (!typedOutput.analysis.reasoning || typedOutput.analysis.reasoning.trim().length === 0) {
       errors.push('El razonamiento del análisis no puede estar vacío');
     }
 
@@ -377,8 +378,8 @@ const analyzeDocumentFlow = ai.defineFlow(
           ErrorSeverity.LOW,
           { 
             warnings: outputValidation.warnings,
-            confidenceScore: analysisResult.confidenceScore,
-            isAuthentic: analysisResult.isAuthentic
+            confidenceScore: analysisResult.analysis.confidenceScore,
+            isAuthentic: analysisResult.analysis.isAuthentic
           }
         );
       }
@@ -395,9 +396,9 @@ const analyzeDocumentFlow = ai.defineFlow(
         { 
           metrics,
           result: {
-            isAuthentic: analysisResult.isAuthentic,
-            confidenceScore: analysisResult.confidenceScore,
-            anomaliesCount: analysisResult.topologicalAnomalies?.length || 0
+            isAuthentic: analysisResult.analysis.isAuthentic,
+            confidenceScore: analysisResult.analysis.confidenceScore,
+            anomaliesCount: analysisResult.analysis.topologicalAnomalies?.length || 0
           }
         }
       );
@@ -453,11 +454,3 @@ export async function analyzeDocument(
     throw error;
   }
 }
-
-// Funciones auxiliares exportadas para testing y debugging
-export const utils = {
-  validateInput,
-  validateOutput,
-  sanitizeInput,
-  CONFIG
-};
