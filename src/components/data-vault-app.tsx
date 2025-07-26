@@ -3,6 +3,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   FileText, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, 
   ScanLine, LogOut, Share2, MoreHorizontal, Calendar, Tag, 
@@ -54,6 +55,7 @@ const initialAccessLogs: AccessLog[] = [
 ];
 
 export function DataVaultApp() {
+  const router = useRouter();
   const [dataItems, setDataItems] = useState<DataItem[]>(initialDataItems);
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>(initialAccessLogs);
   const [isAccessDialogOpen, setIsAccessDialogOpen] = useState(false);
@@ -77,6 +79,10 @@ export function DataVaultApp() {
   const handleDataAdded = (newData: Omit<DataItem, 'id'>) => {
     const newId = `data-${Date.now()}`;
     setDataItems(prev => [...prev, { ...newData, id: newId }]);
+  };
+
+  const handleLogout = () => {
+    router.push('/login');
   };
 
   return (
@@ -104,7 +110,7 @@ export function DataVaultApp() {
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>Configuración</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Cerrar sesión
                     </DropdownMenuItem>
