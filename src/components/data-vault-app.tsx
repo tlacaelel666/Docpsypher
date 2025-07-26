@@ -25,6 +25,7 @@ import { DocSaferLogo } from './doc-safer-logo';
 import { Badge } from './ui/badge';
 import { DataItem } from '@/types/document';
 import { CreateAccessDialog } from './create-access-dialog';
+import { cn } from '@/lib/utils';
 
 interface AccessLog {
   id: string;
