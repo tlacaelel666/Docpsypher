@@ -1,7 +1,7 @@
-import { DigitalLockerApp } from "@/components/digital-locker-app";
+import { DataVaultApp } from "@/components/data-vault-app";
 
 export default function DashboardPage() {
   return (
-    <DigitalLockerApp />
+    <DataVaultApp />
   );
 }
