@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import QRCode from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { DataItem } from '@/types/document';
-import { ShieldCheck, ClipboardCopy, Check } from 'lucide-react';
+import { ShieldCheck, ClipboardCopy, Check, Download } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Checkbox } from './ui/checkbox';
 
@@ -29,6 +29,8 @@ export function CreateAccessDialog({ open, onOpenChange, availableData, onAccess
   const [sku, setSku] = useState('');
   const [shareableLink, setShareableLink] = useState('');
   const { toast } = useToast();
+  const qrCodeRef = useRef<HTMLDivElement>(null);
+
 
   const handleCheckboxChange = (id: string) => {
     setSelectedData(prev => {
@@ -54,7 +56,7 @@ export function CreateAccessDialog({ open, onOpenChange, availableData, onAccess
 
     const newSku = Math.random().toString(36).substring(2, 10).toUpperCase();
     const dataToShare = Array.from(selectedData);
-    const link = `${window.location.origin}/shared/${newSku}?data=${btoa(JSON.stringify(dataToShare))}`;
+    const link = `${window.location.origin}/verify/${newSku}?data=${btoa(JSON.stringify(dataToShare))}`;
     
     setSku(newSku);
     setShareableLink(link);
@@ -67,6 +69,31 @@ export function CreateAccessDialog({ open, onOpenChange, availableData, onAccess
       title: 'Copiado al portapapeles',
     });
   };
+  
+  const handleDownloadQR = () => {
+    const canvas = qrCodeRef.current?.querySelector<HTMLCanvasElement>('canvas');
+    if (canvas) {
+      const pngUrl = canvas
+        .toDataURL("image/png")
+        .replace("image/png", "image/octet-stream");
+      let downloadLink = document.createElement("a");
+      downloadLink.href = pngUrl;
+      downloadLink.download = `docsafer-access-${sku}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+       toast({
+        title: 'Descargando Código QR',
+      });
+    } else {
+        toast({
+            title: 'Error al descargar',
+            description: 'No se pudo encontrar el código QR para descargar.',
+            variant: 'destructive'
+        })
+    }
+  };
+
 
   const handleCloseAndReset = () => {
     if (step === 'generate') {
@@ -131,16 +158,19 @@ export function CreateAccessDialog({ open, onOpenChange, availableData, onAccess
         
         {step === 'generate' && (
             <div className="flex flex-col items-center justify-center gap-6 py-4">
-                <div className="p-4 bg-white rounded-lg border">
+                <div ref={qrCodeRef} className="p-4 bg-white rounded-lg border">
                     <QRCode value={shareableLink} size={180} />
                 </div>
                 <div className="w-full space-y-2">
                     <Label htmlFor="sku">SKU de Uso Único</Label>
                     <div className="flex items-center gap-2">
-                    <Input id="sku" value={sku} readOnly className="font-mono text-lg" />
-                    <Button variant="outline" size="icon" onClick={() => handleCopyToClipboard(sku)}>
-                        <ClipboardCopy className="h-4 w-4" />
-                    </Button>
+                      <Input id="sku" value={sku} readOnly className="font-mono text-lg" />
+                      <Button variant="outline" size="icon" onClick={() => handleCopyToClipboard(sku)}>
+                          <ClipboardCopy className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" onClick={handleDownloadQR}>
+                          <Download className="h-4 w-4" />
+                      </Button>
                     </div>
                 </div>
                 <Alert variant="destructive">
@@ -159,9 +189,9 @@ export function CreateAccessDialog({ open, onOpenChange, availableData, onAccess
                     <Button onClick={handleGenerateCode}>Generar Código</Button>
                 </>
             ) : (
-                <Button onClick={handleCloseAndReset}>
+                 <Button onClick={handleCloseAndReset} className="w-full">
                     <Check className="mr-2 h-4 w-4" />
-                    Hecho
+                    Hecho, cerrar
                 </Button>
             )}
         </DialogFooter>
