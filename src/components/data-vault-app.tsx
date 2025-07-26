@@ -10,7 +10,7 @@ import {
   AlertTriangle, CheckCircle, XCircle, Loader2, Archive,
   Activity, Users, Lock, Unlock, HardDrive, Wifi, WifiOff,
   Bell, Settings, HelpCircle, ChevronDown, ChevronUp, Grid3X3,
-  List, SortAsc, SortDesc, Copy, ExternalLink, Info, Vault, QrCode, KeyRound, UserCheck
+  List, SortAsc, SortDesc, Copy, ExternalLink, Info, Vault, QrCode, KeyRound, UserCheck, PlusCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +25,7 @@ import { DocSaferLogo } from './doc-safer-logo';
 import { Badge } from './ui/badge';
 import { DataItem } from '@/types/document';
 import { CreateAccessDialog } from './create-access-dialog';
+import { AddDataDialog } from './add-data-dialog';
 import { cn } from '@/lib/utils';
 
 interface AccessLog {
@@ -56,6 +57,7 @@ export function DataVaultApp() {
   const [dataItems, setDataItems] = useState<DataItem[]>(initialDataItems);
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>(initialAccessLogs);
   const [isAccessDialogOpen, setIsAccessDialogOpen] = useState(false);
+  const [isAddDataDialogOpen, setIsAddDataDialogOpen] = useState(false);
 
   const handleCreateAccess = () => {
     setIsAccessDialogOpen(true);
@@ -70,6 +72,11 @@ export function DataVaultApp() {
       status: 'Concedido',
     };
     setAccessLogs(prev => [newLog, ...prev]);
+  };
+
+  const handleDataAdded = (newData: Omit<DataItem, 'id'>) => {
+    const newId = `data-${Date.now()}`;
+    setDataItems(prev => [...prev, { ...newData, id: newId }]);
   };
 
   return (
@@ -180,7 +187,8 @@ export function DataVaultApp() {
                   </div>
                 </CardContent>
                  <CardFooter>
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => setIsAddDataDialogOpen(true)}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
                         Añadir nuevo dato
                     </Button>
                 </CardFooter>
@@ -233,6 +241,11 @@ export function DataVaultApp() {
             onOpenChange={setIsAccessDialogOpen}
             availableData={dataItems}
             onAccessCreated={handleAccessCreated}
+        />
+        <AddDataDialog
+          open={isAddDataDialogOpen}
+          onOpenChange={setIsAddDataDialogOpen}
+          onDataAdded={handleDataAdded}
         />
       </div>
     </TooltipProvider>
