@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   FileText, ShieldCheck, Clock, Upload, Trash2, BrainCircuit, 
@@ -19,8 +18,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DocSaferLogo } from './doc-safer-logo';
 import { Badge } from './ui/badge';
@@ -38,21 +35,9 @@ interface AccessLog {
   ipAddress?: string;
 }
 
-const initialDataItems: DataItem[] = [
-  { id: 'data-001', type: 'CURP', value: 'PERJ900101HOCRNN01', details: 'Clave Única de Registro de Población' },
-  { id: 'data-002', type: 'RFC', value: 'PERJ900101ABC', details: 'Registro Federal de Contribuyentes' },
-  { id: 'data-003', type: 'Nombre Completo', value: 'Juan Pérez García', details: 'Nombre legal completo' },
-  { id: 'data-004', type: 'Fecha de Nacimiento', value: '1990-01-01', details: 'Fecha de nacimiento oficial' },
-  { id: 'data-005', type: 'Número de Pasaporte', value: 'G12345678', details: 'Pasaporte Mexicano' },
-  { id: 'data-006', type: 'Dirección', value: 'Calle Falsa 123, Colonia Centro, CDMX', details: 'Dirección de residencia actual' },
-  { id: 'data-007', type: 'Número de Seguro Social', value: '123-456-7890', details: 'NSS Mexicano' },
-];
+const initialDataItems: DataItem[] = [];
 
-const initialAccessLogs: AccessLog[] = [
-  { id: 'log-001', entity: 'Banco Nacional', dataRequested: ['CURP', 'RFC', 'Nombre Completo'], date: '2023-11-15 10:30', status: 'Concedido' },
-  { id: 'log-002', entity: 'Tienda Departamental', dataRequested: ['Nombre Completo', 'Dirección'], date: '2023-11-14 15:00', status: 'Expirado' },
-  { id: 'log-003', entity: 'Trámite Gubernamental', dataRequested: ['CURP', 'Acta de Nacimiento (Ref.)'], date: '2023-11-13 09:15', status: 'Revocado' },
-];
+const initialAccessLogs: AccessLog[] = [];
 
 export function DataVaultApp() {
   const router = useRouter();
@@ -170,7 +155,7 @@ export function DataVaultApp() {
                             </tr>
                         </thead>
                         <tbody className="bg-background divide-y divide-border">
-                            {dataItems.map((item) => (
+                            {dataItems.length > 0 ? dataItems.map((item) => (
                                 <tr key={item.id}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
@@ -187,7 +172,13 @@ export function DataVaultApp() {
                                       <Button variant="ghost" size="sm">Editar</Button>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                              <tr>
+                                <td colSpan={4} className="px-6 py-10 text-center text-muted-foreground">
+                                  Tu bóveda está vacía. ¡Añade tu primer dato!
+                                </td>
+                              </tr>
+                            )}
                         </tbody>
                     </table>
                   </div>
@@ -212,7 +203,7 @@ export function DataVaultApp() {
                 <CardContent>
                   <ScrollArea className="h-[400px]">
                     <div className="space-y-3">
-                      {accessLogs.map((log) => (
+                      {accessLogs.length > 0 ? accessLogs.map((log) => (
                         <Card key={log.id} className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -233,7 +224,11 @@ export function DataVaultApp() {
                             </Badge>
                           </div>
                         </Card>
-                      ))}
+                      )) : (
+                        <div className="px-6 py-10 text-center text-muted-foreground">
+                          No hay registros de auditoría todavía.
+                        </div>
+                      )}
                     </div>
                   </ScrollArea>
                 </CardContent>
