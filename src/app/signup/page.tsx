@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, googleProvider, signInWithPopup } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { DocSaferLogo } from '@/components/doc-safer-logo';
 
@@ -20,21 +20,12 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    // Dummy signup for now, as Firebase auth is not fully configured
-    if (name && email && password) {
-         toast({
-            title: "¡Cuenta Creada!",
-            description: "Te hemos redirigido a tu portafolio.",
-        });
-        router.push('/dashboard');
-        return;
-    }
-
 
     try {
       if (!auth) {
@@ -67,6 +58,34 @@ export default function SignupPage() {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true);
+    try {
+      if (!auth || !googleProvider) {
+        throw new Error("La autenticación de Firebase no está configurada para Google.");
+      }
+      await signInWithPopup(auth, googleProvider);
+      toast({
+        title: "¡Sesión iniciada con Google!",
+        description: "Te hemos redirigido a tu portafolio.",
+      });
+      router.push('/dashboard');
+    } catch (error: any) {
+       console.error("Error con el inicio de sesión de Google:", error);
+       let errorMessage = "Ocurrió un error durante el inicio de sesión con Google.";
+       if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "El proceso de registro fue cancelado.";
+       }
+       toast({
+        title: "Error de Registro con Google",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="dark min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
@@ -84,47 +103,69 @@ export default function SignupPage() {
             <CardDescription>Únete a la nueva era de la seguridad documental.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-               <div className="space-y-2">
-                <Label htmlFor="name">Nombre Completo</Label>
-                <Input 
-                  id="name" 
-                  type="text" 
-                  placeholder="Tu Nombre" 
-                  required 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="tu@email.com" 
-                  required 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="Crea una contraseña segura" 
-                  required 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
+            <div className="space-y-4">
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleGoogleSignUp}
+                disabled={isLoading || isGoogleLoading}
+              >
+                {isGoogleLoading ? 'Cargando...' : 'Continuar con Google'}
               </Button>
-            </form>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    O continúa con
+                  </span>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                 <div className="space-y-2">
+                  <Label htmlFor="name">Nombre Completo</Label>
+                  <Input 
+                    id="name" 
+                    type="text" 
+                    placeholder="Tu Nombre" 
+                    required 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isLoading || isGoogleLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Correo Electrónico</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="tu@email.com" 
+                    required 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading || isGoogleLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="Crea una contraseña segura" 
+                    required 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading || isGoogleLoading}
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
+                  {isLoading ? 'Creando cuenta...' : 'Crear Cuenta con Correo'}
+                </Button>
+              </form>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4 text-center">
             <p className="text-sm text-muted-foreground">
