@@ -24,6 +24,7 @@ import { Badge } from './ui/badge';
 import { DataItem } from '@/types/document';
 import { CreateAccessDialog } from './create-access-dialog';
 import { AddDataDialog } from './add-data-dialog';
+import { EditDataDialog } from './edit-data-dialog';
 import { cn } from '@/lib/utils';
 
 interface AccessLog {
@@ -36,15 +37,17 @@ interface AccessLog {
 }
 
 const initialDataItems: DataItem[] = [];
-
 const initialAccessLogs: AccessLog[] = [];
 
 export function DataVaultApp() {
   const router = useRouter();
   const [dataItems, setDataItems] = useState<DataItem[]>(initialDataItems);
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>(initialAccessLogs);
+  
   const [isAccessDialogOpen, setIsAccessDialogOpen] = useState(false);
   const [isAddDataDialogOpen, setIsAddDataDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<DataItem | null>(null);
 
   const handleCreateAccess = () => {
     setIsAccessDialogOpen(true);
@@ -65,6 +68,19 @@ export function DataVaultApp() {
     const newId = `data-${Date.now()}`;
     setDataItems(prev => [...prev, { ...newData, id: newId }]);
   };
+  
+  const handleEditClick = (item: DataItem) => {
+    setEditingItem(item);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDataUpdated = (updatedItem: DataItem) => {
+    setDataItems(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
+  };
+  
+  const handleDataDeleted = (itemId: string) => {
+    setDataItems(prev => prev.filter(item => item.id !== itemId));
+  }
 
   const handleLogout = () => {
     router.push('/login');
@@ -169,7 +185,7 @@ export function DataVaultApp() {
                                         <div className="text-sm text-muted-foreground">{item.details}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                      <Button variant="ghost" size="sm">Editar</Button>
+                                      <Button variant="ghost" size="sm" onClick={() => handleEditClick(item)}>Editar</Button>
                                     </td>
                                 </tr>
                             )) : (
@@ -247,6 +263,13 @@ export function DataVaultApp() {
           open={isAddDataDialogOpen}
           onOpenChange={setIsAddDataDialogOpen}
           onDataAdded={handleDataAdded}
+        />
+        <EditDataDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          itemToEdit={editingItem}
+          onDataUpdated={handleDataUpdated}
+          onDataDeleted={handleDataDeleted}
         />
       </div>
     </TooltipProvider>
