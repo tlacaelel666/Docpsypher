@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -73,11 +74,23 @@ export default function SignupPage() {
     } catch (error: any) {
        console.error("Error con el inicio de sesión de Google:", error);
        let errorMessage = "Ocurrió un error durante el inicio de sesión con Google.";
-       if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = "El proceso de registro fue cancelado.";
+       let errorTitle = "Error de Registro con Google";
+
+       switch (error.code) {
+         case 'auth/popup-closed-by-user':
+           errorMessage = "El proceso de registro fue cancelado.";
+           break;
+         case 'auth/account-exists-with-different-credential':
+           errorTitle = "Cuenta ya existente";
+           errorMessage = "Ya existe una cuenta con este correo electrónico. Por favor, inicia sesión con tu método original (correo y contraseña).";
+           break;
+         case 'auth/network-request-failed':
+            errorMessage = "Error de red. Por favor, comprueba tu conexión a internet.";
+            break;
        }
+
        toast({
-        title: "Error de Registro con Google",
+        title: errorTitle,
         description: errorMessage,
         variant: "destructive",
       });
