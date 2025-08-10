@@ -654,11 +654,18 @@ export default function LoginPage() {
                   Regístrate
                 </Link>
               </p>
-              <p>
-                <Link href="/forgot-password" className="text-primary hover:underline">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </p>
+              <div className="flex gap-4 justify-center">
+                 <p>
+                    <Link href="/forgot-password" className="text-primary hover:underline">
+                    ¿Olvidaste tu contraseña?
+                    </Link>
+                </p>
+                 <p>
+                    <Link href="/recover-by-question" className="text-primary hover:underline">
+                    Usar pregunta de seguridad
+                    </Link>
+                </p>
+              </div>
             </div>
             
             {/* Credenciales de prueba en desarrollo */}
