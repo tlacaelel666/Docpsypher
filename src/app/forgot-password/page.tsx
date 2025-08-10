@@ -12,7 +12,10 @@ import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { DocSaferLogo } from '@/components/doc-safer-logo';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+
+// Basic email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -23,37 +26,85 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsLoading(true);
     setError(null);
 
     if (!email) {
       setError("Por favor, introduce tu correo electrónico.");
-      setIsLoading(false);
       return;
     }
+    if (!EMAIL_REGEX.test(email)) {
+        setError("Por favor, introduce un correo electrónico válido.");
+        return;
+    }
+
+    setIsLoading(true);
 
     try {
       if (!auth) {
-        throw new Error("La autenticación de Firebase no está disponible.");
+        throw new Error("La configuración de Firebase no está disponible. No se puede enviar el correo.");
       }
-      await sendPasswordResetEmail(auth, email);
+      
+      // The actionCodeSettings can help redirect the user back to your app
+      // after they reset their password. This is optional but good practice.
+      const actionCodeSettings = {
+        url: `${window.location.origin}/login`,
+        handleCodeInApp: true,
+      };
+
+      await sendPasswordResetEmail(auth, email, actionCodeSettings);
+
       toast({
         title: "Correo de recuperación enviado",
-        description: "Revisa tu bandeja de entrada para restablecer tu contraseña.",
+        description: `Si existe una cuenta para ${email}, recibirás un correo electrónico con instrucciones para restablecer tu contraseña.`,
       });
-      router.push('/login');
+      // It's often better not to redirect immediately, so the user can read the toast.
+      // But redirecting to login is also a common pattern.
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+
     } catch (err: any) {
       console.error("Error al enviar el correo de recuperación:", err);
-      let errorMessage = "Ocurrió un error. Inténtalo de nuevo.";
-      if (err.code === 'auth/user-not-found') {
-        errorMessage = "No se encontró ninguna cuenta con este correo electrónico.";
+      
+      let errorMessage = "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.";
+      
+      // Firebase provides specific error codes that we can use for better user feedback.
+      switch (err.code) {
+        case 'auth/user-not-found':
+          // For security, you might not want to reveal if an email is registered or not.
+          // The generic success message handles this, but if you want to be specific, this is how.
+          errorMessage = "No se encontró ninguna cuenta con este correo electrónico.";
+           toast({
+            title: "Correo de recuperación enviado",
+            description: `Si existe una cuenta para ${email}, recibirás un correo electrónico con instrucciones.`,
+          });
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "El formato del correo electrónico no es válido.";
+          break;
+        case 'auth/network-request-failed':
+            errorMessage = "Error de red. Por favor, comprueba tu conexión a internet.";
+            break;
+        default:
+          // This will catch other Firebase errors or the custom error thrown above.
+          errorMessage = err.message || errorMessage;
+          break;
       }
-      setError(errorMessage);
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      
+      // Only set the on-screen error for client-side validation issues.
+      // For server errors, the toast is usually enough.
+      if (err.code === 'auth/invalid-email'){
+          setError(errorMessage);
+      }
+
+      // We show a toast for any error that occurs after submission.
+       if(err.code !== 'auth/user-not-found'){
+            toast({
+                title: "Error al enviar correo",
+                description: errorMessage,
+                variant: "destructive",
+            });
+       }
     } finally {
       setIsLoading(false);
     }
@@ -91,13 +142,18 @@ export default function ForgotPasswordPage() {
                   aria-describedby={error ? "email-error" : undefined}
                 />
                 {error && (
-                  <p id="email-error" className="text-sm text-destructive" role="alert">
+                  <p id="email-error" className="text-sm text-destructive mt-1" role="alert">
                     {error}
                   </p>
                 )}
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Enviando...' : 'Enviar Correo de Recuperación'}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                 ) : 'Enviar Correo de Recuperación'}
               </Button>
             </form>
           </CardContent>
