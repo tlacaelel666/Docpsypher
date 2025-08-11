@@ -1,9 +1,10 @@
 import { createFlow } 
+from '@react-flow/core';
 import { analyzeDocumentStep,
   extractDocumentDataStep,
   getDocumentEmbeddingStep,
 }
-from { BiMoTypeProtocol } import 'BiMoTypeProtocol.cs';
+from './';
 
 export const analyzeDocumentFlow = createFlow({
   id: 'analyzeDocumentFlow',
