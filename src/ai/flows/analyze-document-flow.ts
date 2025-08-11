@@ -1,12 +1,9 @@
-import { createFlow } 
-from '@react-flow/core';
-import { analyzeDocumentStep,
+import { createFlow,
+  analyzeDocumentStep,
   extractDocumentDataStep,
   getDocumentEmbeddingStep,
-}
-from './';
-
-export const analyzeDocumentFlow = createFlow({
+}from './app/flows/document-analysis.js';
+import analyzeDocumentFlow = createFlow({
   id: 'analyzeDocumentFlow',
   name: 'Document analysis',
   description: 'Analyzes a document and extracts data',
@@ -16,3 +13,4 @@ export const analyzeDocumentFlow = createFlow({
     extractDocumentDataStep,
   ],
 });
+
